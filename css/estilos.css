@@ -125,7 +125,7 @@ kbd {
   -webkit-backface-visibility: hidden;
   box-shadow: 0 0 30px rgba(79, 209, 255, 0.45), 0 10px 30px rgba(0, 0, 0, 0.4);
 }
-.cara-frente img { width: 84%; height: 84%; object-fit: contain; }
+.cara-frente img { width: 100%; height: 100%; }
 .cara-dorso { transform: rotateY(180deg); }
 .cara-dorso img { width: 100%; height: 100%; }
 @keyframes moneda {
