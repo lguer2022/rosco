@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rosco Radiológico</title>
+  <meta name="description" content="Juego de rosco para estudiantes de la Licenciatura en Producción de Bioimágenes.">
+  <meta name="author" content="Mg. Lic. Prof. Leandro Guerschberg">
+  <link rel="icon" href="img/icono.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+  <!-- ============ INICIO ============ -->
+  <section id="pantalla-inicio" class="pantalla activa">
+    <div class="inicio">
+      <header class="marca">
+        <div class="marca-logo" aria-hidden="true">
+          <img src="img/icono.svg" alt="">
+        </div>
+        <h1>Rosco <span>Radiológico</span></h1>
+        <p class="bajada">Licenciatura en Producción de Bioimágenes</p>
+        <p class="bajada bajada-2">Departamento de Ciencias de la Salud y Deporte, UNPAZ</p>
+      </header>
+
+      <form id="form-inicio" class="panel-config" autocomplete="off">
+        <fieldset>
+          <legend>Modalidad</legend>
+          <div class="opciones-modo">
+            <label class="opcion-modo">
+              <input type="radio" name="modo" value="preguntas" checked>
+              <span class="opcion-cuerpo">
+                <strong>Con preguntas</strong>
+                <small>Cada equipo tiene su rosco con definiciones de la A a la Z.</small>
+              </span>
+            </label>
+            <label class="opcion-modo">
+              <input type="radio" name="modo" value="libre">
+              <span class="opcion-cuerpo">
+                <strong>Sin preguntas</strong>
+                <small>Solo el rosco y las letras. Quien conduce lee sus propias preguntas.</small>
+              </span>
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset id="grupo-banco">
+          <legend>Banco de preguntas</legend>
+          <select id="sel-banco" name="banco"></select>
+          <p id="desc-banco" class="ayuda"></p>
+        </fieldset>
+
+        <fieldset>
+          <legend>Equipos</legend>
+          <div class="fila-2">
+            <label class="campo">
+              <span>Equipo 1</span>
+              <input id="nombre-a" type="text" maxlength="24" value="Equipo Azul">
+            </label>
+            <label class="campo">
+              <span>Equipo 2</span>
+              <input id="nombre-b" type="text" maxlength="24" value="Equipo Naranja">
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Reloj</legend>
+          <div class="fila-2">
+            <label class="interruptor">
+              <input id="con-reloj" type="checkbox" checked>
+              <span>Usar reloj por equipo</span>
+            </label>
+            <label class="campo campo-segundos">
+              <span>Segundos por equipo</span>
+              <input id="segundos" type="number" min="10" max="900" step="5" value="150">
+            </label>
+          </div>
+        </fieldset>
+
+        <div class="acciones-inicio">
+          <button type="submit" class="btn btn-primario btn-grande">Comenzar partida</button>
+          <button type="button" id="btn-ir-preguntas" class="btn btn-secundario">Gestionar preguntas</button>
+          <button type="button" id="btn-ayuda" class="btn btn-texto">Cómo se juega</button>
+        </div>
+      </form>
+
+      <footer class="autoria">
+        Autor: <strong>Mg. Lic. Prof. Leandro Guerschberg</strong> · 2026
+      </footer>
+    </div>
+  </section>
+
+  <!-- ============ JUEGO ============ -->
+  <section id="pantalla-juego" class="pantalla">
+    <header class="barra-juego">
+      <div class="controles" role="toolbar" aria-label="Controles del juego">
+        <button class="ctrl ctrl-pausa" id="btn-pausa" title="Pausar / reanudar (Espacio)" aria-label="Pausar o reanudar">
+          <svg viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+        </button>
+        <button class="ctrl ctrl-incorrecta" id="btn-incorrecta" title="Incorrecta (Retroceso)" aria-label="Incorrecta">
+          <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+        <button class="ctrl ctrl-correcta" id="btn-correcta" title="Correcta (Enter)" aria-label="Correcta">
+          <svg viewBox="0 0 24 24"><path d="M4.5 12.5l5 5 10-11"/></svg>
+        </button>
+        <button class="ctrl ctrl-pasapalabra" id="btn-pasapalabra" title="Pasapalabra (P)" aria-label="Pasapalabra">
+          <svg viewBox="0 0 24 24"><path d="M19 8a8 8 0 0 0-14 1M5 16a8 8 0 0 0 14-1"/><path d="M19 3v5h-5M5 21v-5h5"/></svg>
+        </button>
+      </div>
+
+      <div class="marcador" id="marcador"></div>
+
+      <div class="controles controles-sec">
+        <button class="ctrl ctrl-sec" id="btn-deshacer" title="Deshacer (Ctrl+Z)" aria-label="Deshacer">
+          <svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>
+        </button>
+        <button class="ctrl ctrl-sec" id="btn-sonido" title="Sonido (S)" aria-label="Activar o silenciar sonido">
+          <svg viewBox="0 0 24 24" class="ico-sonido"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg>
+        </button>
+        <button class="ctrl ctrl-sec" id="btn-pantalla" title="Pantalla completa (F)" aria-label="Pantalla completa">
+          <svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+        </button>
+        <button class="ctrl ctrl-sec" id="btn-salir" title="Volver al menú" aria-label="Volver al menú">
+          <svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <main class="escenario" id="escenario">
+      <div class="zona-rosco">
+        <div class="rosco" id="rosco">
+          <div class="rosco-centro" id="rosco-centro">
+            <span class="rosco-equipo" id="rosco-equipo"></span>
+            <span class="rosco-letra" id="rosco-letra"></span>
+            <span class="rosco-tipo" id="rosco-tipo"></span>
+          </div>
+        </div>
+        <div class="contador contador-tiempo" id="contador-tiempo" title="Tiempo restante">
+          <svg viewBox="0 0 100 100" aria-hidden="true">
+            <circle class="aro-fondo" cx="50" cy="50" r="45"/>
+            <circle class="aro" id="aro-tiempo" cx="50" cy="50" r="45"/>
+          </svg>
+          <span id="valor-tiempo">150</span>
+        </div>
+        <div class="contador contador-aciertos" id="contador-aciertos" title="Respuestas correctas">
+          <svg viewBox="0 0 100 100" aria-hidden="true">
+            <circle class="aro-fondo" cx="50" cy="50" r="45"/>
+            <circle class="aro" id="aro-aciertos" cx="50" cy="50" r="45"/>
+          </svg>
+          <span id="valor-aciertos">0</span>
+        </div>
+      </div>
+
+      <aside class="panel-pregunta" id="panel-pregunta">
+        <div class="pregunta-cabecera">
+          <span class="pregunta-letra" id="pregunta-letra">A</span>
+          <span class="pregunta-tipo" id="pregunta-tipo">Empieza con la A</span>
+        </div>
+        <p class="pregunta-texto" id="pregunta-texto"></p>
+        <div class="respuesta" id="respuesta">
+          <button class="btn btn-secundario" id="btn-respuesta">Mostrar respuesta <kbd>R</kbd></button>
+          <p class="respuesta-texto" id="respuesta-texto" hidden></p>
+        </div>
+        <ul class="atajos">
+          <li><kbd>Enter</kbd> correcta</li>
+          <li><kbd>⌫</kbd> incorrecta</li>
+          <li><kbd>P</kbd> pasapalabra</li>
+          <li><kbd>Espacio</kbd> pausa</li>
+        </ul>
+      </aside>
+    </main>
+
+    <!-- Aviso de turno -->
+    <div class="capa" id="capa-turno" hidden>
+      <div class="tarjeta-capa">
+        <p class="capa-sub" id="turno-motivo">Comienza el juego</p>
+        <h2 id="turno-titulo">Turno de</h2>
+        <p class="capa-detalle" id="turno-detalle"></p>
+        <button class="btn btn-primario btn-grande" id="btn-comenzar-turno">Comenzar <kbd>Espacio</kbd></button>
+      </div>
+    </div>
+
+    <!-- Pausa -->
+    <div class="capa capa-ligera" id="capa-pausa" hidden>
+      <div class="tarjeta-capa">
+        <h2>Pausa</h2>
+        <button class="btn btn-primario" id="btn-reanudar">Reanudar <kbd>Espacio</kbd></button>
+      </div>
+    </div>
+
+    <!-- Resultados -->
+    <div class="capa" id="capa-final" hidden>
+      <div class="tarjeta-capa tarjeta-final">
+        <p class="capa-sub">Fin del juego</p>
+        <h2 id="final-titulo">Ganador</h2>
+        <div class="tabla-final" id="tabla-final"></div>
+        <p class="ayuda">Gana el equipo con más respuestas correctas; si empatan, el que tenga menos incorrectas.</p>
+        <div class="acciones-final">
+          <button class="btn btn-secundario" id="btn-ver-roscos">Ver roscos</button>
+          <button class="btn btn-secundario" id="btn-revancha">Jugar de nuevo</button>
+          <button class="btn btn-primario" id="btn-menu-final">Menú principal</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ GESTIÓN DE PREGUNTAS ============ -->
+  <section id="pantalla-preguntas" class="pantalla">
+    <div class="gestion">
+      <header class="gestion-cabecera">
+        <button class="btn btn-texto" id="btn-volver-preguntas">← Volver al menú</button>
+        <h2>Bancos de preguntas</h2>
+      </header>
+
+      <div class="gestion-acciones">
+        <button class="btn btn-primario" id="btn-nuevo-banco">Nuevo banco</button>
+        <label class="btn btn-secundario btn-archivo">
+          Importar Excel / CSV
+          <input type="file" id="input-importar" accept=".xlsx,.xls,.csv,.ods" hidden>
+        </label>
+        <button class="btn btn-secundario" id="btn-plantilla">Descargar plantilla Excel</button>
+      </div>
+      <p class="ayuda">
+        La plantilla tiene una fila por letra y por equipo, con las columnas <b>Equipo</b> (A o B), <b>Letra</b>,
+        <b>Tipo</b> (Empieza o Contiene), <b>Pregunta</b> y <b>Respuesta</b>. Los bancos propios se guardan en este navegador:
+        exportalos a Excel para tener una copia o usarlos en otra computadora. Para que un banco lo vea
+        cualquiera que entre al sitio, subí el Excel a la carpeta <b>bancos</b> del repositorio en GitHub.
+      </p>
+
+      <div class="lista-bancos" id="lista-bancos"></div>
+    </div>
+  </section>
+
+  <!-- ============ EDITOR DE BANCO ============ -->
+  <section id="pantalla-editor" class="pantalla">
+    <div class="gestion">
+      <header class="gestion-cabecera">
+        <button class="btn btn-texto" id="btn-cancelar-editor">← Volver sin guardar</button>
+        <h2 id="editor-titulo">Editar banco</h2>
+      </header>
+
+      <div class="fila-2">
+        <label class="campo">
+          <span>Nombre del banco</span>
+          <input id="editor-nombre" type="text" maxlength="60">
+        </label>
+        <label class="campo">
+          <span>Descripción</span>
+          <input id="editor-desc" type="text" maxlength="140">
+        </label>
+      </div>
+
+      <div class="pestanas" role="tablist">
+        <button class="pestana activa" data-equipo="A" role="tab">Rosco equipo 1</button>
+        <button class="pestana" data-equipo="B" role="tab">Rosco equipo 2</button>
+      </div>
+
+      <div class="tabla-editor" id="tabla-editor"></div>
+
+      <div class="editor-pie">
+        <span id="editor-estado" class="ayuda"></span>
+        <button class="btn btn-primario" id="btn-guardar-banco">Guardar banco</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ AYUDA ============ -->
+  <div class="capa" id="capa-ayuda" hidden>
+    <div class="tarjeta-capa tarjeta-ayuda">
+      <h2>Cómo se juega</h2>
+      <ol>
+        <li>Juegan dos equipos, cada uno con su propio rosco de 25 letras y su propio reloj.</li>
+        <li>Quien conduce marca cada respuesta:
+          <span class="chip chip-verde">Verde</span> correcta: el equipo sigue con la letra siguiente.
+          <span class="chip chip-amarillo">Amarillo</span> pasapalabra: la letra queda pendiente y pasa el turno.
+          <span class="chip chip-rojo">Rojo</span> incorrecta: la letra se pierde y pasa el turno.
+        </li>
+        <li>El reloj de cada equipo solo corre durante su turno. Si se agota, ese equipo termina.</li>
+        <li>Cuando un equipo vuelve a jugar, retoma las letras pendientes.</li>
+        <li>Gana el equipo con más respuestas correctas. Si empatan, gana el que tenga menos incorrectas.</li>
+      </ol>
+      <p class="ayuda">Atajos: <kbd>Enter</kbd> correcta · <kbd>⌫</kbd> incorrecta · <kbd>P</kbd> pasapalabra ·
+        <kbd>Espacio</kbd> pausa · <kbd>R</kbd> mostrar respuesta · <kbd>Ctrl+Z</kbd> deshacer · <kbd>F</kbd> pantalla completa</p>
+      <button class="btn btn-primario" id="btn-cerrar-ayuda">Entendido</button>
+    </div>
+  </div>
+
+  <div class="aviso" id="aviso" role="status" aria-live="polite"></div>
+
+  <script src="vendor/xlsx.full.min.js" defer></script>
+  <script src="js/preguntas.js" defer></script>
+  <script src="js/almacen.js" defer></script>
+  <script src="js/sonidos.js" defer></script>
+  <script src="js/juego.js" defer></script>
+  <script src="js/gestor.js" defer></script>
+  <script src="js/publicados.js" defer></script>
+  <script src="js/app.js" defer></script>
+</body>
+</html>
