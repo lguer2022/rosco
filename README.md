@@ -111,7 +111,7 @@ js/app.js             Menú y navegación
 bancos/               Bancos publicados (Excel/CSV) para todos los usuarios
 scripts/indice-bancos.js  Genera la lista de bancos publicados
 netlify.toml          Configuración de publicación
-img/                  Logo (SVG, PNG) y animación
+img/                  Logos (SVG, PNG) y animación
 vendor/xlsx.full.min.js  Lectura y escritura de Excel (SheetJS, Apache 2.0)
 plantilla/            Plantilla CSV de preguntas
 ```
